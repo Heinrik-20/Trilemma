@@ -4,6 +4,7 @@ import numpy as np
 import statsmodels.api as sm
 import warnings
 
+from typing import Optional
 from datetime import datetime
 from ta.trend import ema_indicator, stc, macd, trix, kst
 from ta.volatility import bollinger_hband, bollinger_lband, ulcer_index
@@ -17,7 +18,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 BTC = "BTC-USD"
 END_DATE = datetime.today().strftime("%Y-%m-%d")
 
-def create_dataset():
+def create_dataset(price_as_target: Optional[bool]=False):
 
     stocks = yf.Ticker(
         BTC
@@ -78,7 +79,11 @@ def create_dataset():
     btc['stochrsi'] = stochrsi(btc['Open'])
     btc['tsi'] = tsi(btc['Open'])
 
-    btc['target'] = ((btc['Open'].shift(-1).fillna(np.nan).values - btc['Open'].values)/btc['Open'].values) * 100
+    if price_as_target:
+        btc['target'] = btc['Open'].shift(-1).fillna(np.nan).values
+    else:
+        btc['target'] = ((btc['Open'].shift(-1).fillna(np.nan).values - btc['Open'].values)/btc['Open'].values) * 100
+
     btc = btc.dropna()
     
     return btc
