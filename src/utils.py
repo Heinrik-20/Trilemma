@@ -6,9 +6,9 @@ import warnings
 
 from typing import Optional
 from datetime import datetime
-from ta.trend import ema_indicator, stc, macd, trix, kst
+from ta.trend import ema_indicator, macd, kst
 from ta.volatility import bollinger_hband, bollinger_lband, ulcer_index
-from ta.momentum import kama, ppo, roc, rsi, stochrsi, tsi
+from ta.momentum import kama, ppo, roc, rsi, stochrsi
 
 
 # Suppress warnings to keep the output clean
@@ -61,9 +61,7 @@ def create_dataset(price_as_target: Optional[bool]=False):
     # Trend indicators
     btc['ema_12'] = ema_indicator(btc['Open'])
     btc['ema_26'] = ema_indicator(btc['Open'], window=26)
-    btc['stc'] = stc(btc['Open'])
     btc['macd'] = macd(btc['Open'])
-    btc['trix'] = trix(btc['Open'])
     btc['kst'] = kst(btc['Open'])
 
     # Volatility indicators
@@ -77,13 +75,10 @@ def create_dataset(price_as_target: Optional[bool]=False):
     btc['roc'] = roc(btc['Open'])
     btc['rsi'] = rsi(btc['Open'])
     btc['stochrsi'] = stochrsi(btc['Open'])
-    btc['tsi'] = tsi(btc['Open'])
 
     if price_as_target:
         btc['target'] = btc['Open'].shift(-1).fillna(np.nan).values
     else:
         btc['target'] = ((btc['Open'].shift(-1).fillna(np.nan).values - btc['Open'].values)/btc['Open'].values) * 100
-
-    btc = btc.dropna()
     
     return btc
