@@ -59,26 +59,31 @@ def create_dataset(price_as_target: Optional[bool]=False):
         btc = btc.loc[(btc['Date'].dt.day_of_week == 0) & (btc['Date'].dt.hour == 20)]
 
     # Trend indicators
-    btc['ema_12'] = ema_indicator(btc['Open'])
-    btc['ema_26'] = ema_indicator(btc['Open'], window=26)
-    btc['macd'] = macd(btc['Open'])
-    btc['kst'] = kst(btc['Open'])
+    btc['ema_2'] = ema_indicator(btc['Open'], window=2)
+    btc['ema_4'] = ema_indicator(btc['Open'], window=4)
+    btc['macd'] = macd(btc['Open'], window_fast=2, window_slow=4)
+    btc['kst'] = kst(btc['Open'], 1,2,3,4,1,2,3,4)
 
     # Volatility indicators
-    btc['bollinger_high'] = bollinger_hband(btc['Open'])
-    btc['bollinger_low'] = bollinger_lband(btc['Open'])
-    btc['ulcer_index'] = ulcer_index(btc['Open'])
+    btc['bollinger_high'] = bollinger_hband(btc['Open'], 2, 1)
+    btc['bollinger_low'] = bollinger_lband(btc['Open'], 2, 1)
+    btc['ulcer_index'] = ulcer_index(btc['Open'], 3)
 
     # Momentum indicators
-    btc['kama'] = kama(btc['Open'])
-    btc['ppo'] = ppo(btc['Open'])
-    btc['roc'] = roc(btc['Open'])
-    btc['rsi'] = rsi(btc['Open'])
-    btc['stochrsi'] = stochrsi(btc['Open'])
+    btc['kama'] = kama(btc['Open'], 2)
+    btc['ppo'] = ppo(btc['Open'], 4, 2, 3)
+    btc['roc'] = roc(btc['Open'], 2)
+    btc['rsi'] = rsi(btc['Open'], 2)
+    btc['stochrsi'] = stochrsi(btc['Open'], 2, 1, 1)
 
     if price_as_target:
         btc['target'] = btc['Open'].shift(-1).fillna(np.nan).values
     else:
         btc['target'] = ((btc['Open'].shift(-1).fillna(np.nan).values - btc['Open'].values)/btc['Open'].values) * 100
+
+    btc['target_ema_2'] = ema_indicator(btc['target'], window=2)
+    btc['target_ema_4'] = ema_indicator(btc['target'], window=4)
+    btc['target_ma_2'] = btc['target'].shift(1).rolling(2).mean()
+    btc['target_ma_4'] = btc['target'].shift(1).rolling(4).mean()
     
     return btc
