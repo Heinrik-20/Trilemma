@@ -5,7 +5,8 @@ from datetime import datetime
 
 def extract_btc():
     today = datetime.today().strftime("%Y-%m-%d")
-    btc = yf.Ticker('BTC-USD').history(period="730d", interval='1h').drop(columns=['Dividends', 'Stock Splits'])
+    btc = yf.Ticker('BTC-USD').history(period="730d", interval='1h').drop(columns=['Dividends', 'Stock Splits']).reset_index()
+    print(btc['Datetime'])
     btc.to_parquet(f"../data/btc-{today}.pq")
 
     return

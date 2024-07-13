@@ -58,6 +58,7 @@ def create_dataset(price_as_target: Optional[bool]=False):
         btc = pd.concat([btc, btc_old_processed], axis=0).sort_values(by='Date').reset_index(drop=True)[['Date', 'Open']]
         btc = btc.loc[(btc['Date'].dt.day_of_week == 0) & (btc['Date'].dt.hour == 20)]
 
+    btc['Open'] = btc['Open'].astype(np.float64)
     # Trend indicators
     btc['ema_2'] = ema_indicator(btc['Open'], window=2)
     btc['ema_4'] = ema_indicator(btc['Open'], window=4)
